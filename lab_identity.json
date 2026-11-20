@@ -1,0 +1,9 @@
+{
+  "mssv": "24520376",
+  "session_code": "SC-9D2362",
+  "contract": "Escrow_0376",
+  "baseline_sha256": "334d99f7e1cbd6fda63ca0c2640dcd6e39db8a45e8c773ef727f2b465c818684",
+  "generated_utc": "2026-11-20T03:05:56.165862+00:00",
+  "solidity": "0.8.24",
+  "note": "session_code sinh tai may SV, KHONG do GV cap"
+}

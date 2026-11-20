@@ -1,0 +1,60 @@
+COMMAND: slither AuditTarget.sol --config-file slither.config.json --fail-none --json evidence/before_configured/slither.json
+SLITHER_VERSION:
+0.11.6
+
+SOLC_VERSION:
+solc, the solidity compiler commandline interface
+Version: 0.8.24+commit.e11b9ed9.Linux.g++
+
+
+Detector: controlled-delegatecall
+Escrow_0376.plugin(address,bytes) (AuditTarget.sol#59-62) uses delegatecall to a input-controlled function id
+	- (ok,None) = target.delegatecall(data) (AuditTarget.sol#60)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#controlled-delegatecall
+
+Detector: reentrancy-eth
+Reentrancy in Escrow_0376.exitSafe() (AuditTarget.sol#68-73):
+	External calls:
+	- (ok,None) = msg.sender.call{value: a}() (AuditTarget.sol#70)
+	State variables written after the call(s):
+	- held[msg.sender] = 0 (AuditTarget.sol#72)
+	Escrow_0376.held (AuditTarget.sol#14) can be used in cross function reentrancies:
+	- Escrow_0376.exitSafe() (AuditTarget.sol#68-73)
+	- Escrow_0376.fundSafe() (AuditTarget.sol#64-66)
+	- Escrow_0376.held (AuditTarget.sol#14)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-1
+
+Detector: suicidal
+Escrow_0376.closeVault() (AuditTarget.sol#44-46) allows anyone to destruct the contract
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#suicidal
+
+Detector: incorrect-equality
+Escrow_0376.zeroBalance() (AuditTarget.sol#75-77) uses a dangerous strict equality:
+	- address(this).balance == 0 (AuditTarget.sol#76)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dangerous-strict-equalities
+
+Detector: tx-origin
+Escrow_0376.updateOwner(address) (AuditTarget.sol#48-52) uses tx.origin for authorization: require(bool,string)(tx.origin == owner,not owner) (AuditTarget.sol#49)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dangerous-usage-of-txorigin
+
+Detector: unchecked-lowlevel
+Escrow_0376.drainTo(address) (AuditTarget.sol#54-57) ignores return value by to.call{value: address(this).balance}() (AuditTarget.sol#56)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unchecked-low-level-calls
+AuditTarget.sol analyzed (2 contracts with 64 detectors), 6 result(s) found
+Multiple frameworks detected: solc, Solc-json. Using solc (highest priority). Use --compile-force-framework to override.
+'solc --version' running
+'solc AuditTarget.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc,hashes --allow-paths .,/mnt/d/UIT/BlockChain/Lab06_SinhVien' running
+Compilation warnings/errors on AuditTarget.sol:
+Warning: "selfdestruct" has been deprecated. Note that, starting from the Cancun hard fork, the underlying opcode no longer deletes the code and data associated with an account and only transfers its Ether to the beneficiary, unless executed in the same transaction in which the contract was created (see EIP-6780). Any use in newly deployed contracts is strongly discouraged even if the new behavior is taken into account. Future changes to the EVM might further reduce the functionality of the opcode.
+  --> AuditTarget.sol:45:9:
+   |
+45 |         selfdestruct(payable(msg.sender));
+   |         ^^^^^^^^^^^^
+
+Warning: Return value of low-level calls not used.
+  --> AuditTarget.sol:56:9:
+   |
+56 |         to.call{value: address(this).balance}("");
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
