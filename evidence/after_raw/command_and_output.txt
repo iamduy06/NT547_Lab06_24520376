@@ -1,0 +1,40 @@
+COMMAND: slither AuditTarget.sol --config-file config/slither.raw.json --fail-none --json evidence/after_raw/slither.json
+SLITHER_VERSION:
+0.11.6
+
+SOLC_VERSION:
+solc, the solidity compiler commandline interface
+Version: 0.8.24+commit.e11b9ed9.Linux.g++
+
+
+Detector: events-access
+Escrow_0376.updateOwner(address) (AuditTarget.sol#49-53) should emit an event for: 
+	- owner = newOwner (AuditTarget.sol#52) 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-events-access-control
+
+Detector: low-level-calls
+Low level call in Escrow_0376.ownerWithdraw(uint256) (AuditTarget.sol#40-43):
+	- (ok,None) = address(owner).call{value: amount}() (AuditTarget.sol#41)
+Low level call in Escrow_0376.drainTo(address) (AuditTarget.sol#55-59):
+	- (ok,None) = to.call{value: address(this).balance}() (AuditTarget.sol#57)
+Low level call in Escrow_0376.plugin(address,bytes) (AuditTarget.sol#61-65):
+	- (ok,None) = trustedPlugin.delegatecall(data) (AuditTarget.sol#63)
+Low level call in Escrow_0376.exitSafe() (AuditTarget.sol#71-76):
+	- (ok,None) = msg.sender.call{value: a}() (AuditTarget.sol#74)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
+
+Detector: naming-convention
+Contract Escrow_0376 (AuditTarget.sol#10-82) is not in CapWords
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+AuditTarget.sol analyzed (2 contracts with 102 detectors), 6 result(s) found
+Multiple frameworks detected: solc, Solc-json. Using solc (highest priority). Use --compile-force-framework to override.
+'solc --version' running
+'solc AuditTarget.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc,hashes --allow-paths .,/mnt/d/UIT/BlockChain/Lab06_SinhVien' running
+Compilation warnings/errors on AuditTarget.sol:
+Warning: "selfdestruct" has been deprecated. Note that, starting from the Cancun hard fork, the underlying opcode no longer deletes the code and data associated with an account and only transfers its Ether to the beneficiary, unless executed in the same transaction in which the contract was created (see EIP-6780). Any use in newly deployed contracts is strongly discouraged even if the new behavior is taken into account. Future changes to the EVM might further reduce the functionality of the opcode.
+  --> AuditTarget.sol:46:9:
+   |
+46 |         selfdestruct(payable(owner));
+   |         ^^^^^^^^^^^^
+
+

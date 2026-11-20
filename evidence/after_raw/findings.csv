@@ -1,0 +1,7 @@
+﻿index,check,impact,confidence,file,lines,description
+1,events-access,Low,Medium,AuditTarget.sol,"49,50,51,52,53; 52",Escrow_0376.updateOwner(address) (AuditTarget.sol#49-53) should emit an event for:  	- owner = newOwner (AuditTarget.sol#52)
+2,low-level-calls,Informational,High,AuditTarget.sol,"61,62,63,64,65; 63","Low level call in Escrow_0376.plugin(address,bytes) (AuditTarget.sol#61-65): 	- (ok,None) = trustedPlugin.delegatecall(data) (AuditTarget.sol#63)"
+3,low-level-calls,Informational,High,AuditTarget.sol,"55,56,57,58,59; 57","Low level call in Escrow_0376.drainTo(address) (AuditTarget.sol#55-59): 	- (ok,None) = to.call{value: address(this).balance}() (AuditTarget.sol#57)"
+4,low-level-calls,Informational,High,AuditTarget.sol,"71,72,73,74,75,76; 74","Low level call in Escrow_0376.exitSafe() (AuditTarget.sol#71-76): 	- (ok,None) = msg.sender.call{value: a}() (AuditTarget.sol#74)"
+5,low-level-calls,Informational,High,AuditTarget.sol,"40,41,42,43; 41","Low level call in Escrow_0376.ownerWithdraw(uint256) (AuditTarget.sol#40-43): 	- (ok,None) = address(owner).call{value: amount}() (AuditTarget.sol#41)"
+6,naming-convention,Informational,High,AuditTarget.sol,"10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82",Contract Escrow_0376 (AuditTarget.sol#10-82) is not in CapWords

@@ -12,6 +12,7 @@ contract Escrow_0376 {
     mapping(address => uint256) public balances;
     bool private busy;
     mapping(address => uint256) public held;
+    address public constant trustedPlugin = address(0x100);
 
     event Deposited(address indexed who, uint256 amount);
 
@@ -41,23 +42,25 @@ contract Escrow_0376 {
         require(ok, "withdraw failed");
     }
 
-    function closeVault() external {
-        selfdestruct(payable(msg.sender));
+    function closeVault() external onlyOwner {
+        selfdestruct(payable(owner));
     }
 
     function updateOwner(address newOwner) external {
-        require(tx.origin == owner, "not owner");
+        require(msg.sender == owner, "not owner");
         require(newOwner != address(0), "zero");
         owner = newOwner;
     }
 
     function drainTo(address payable to) external onlyOwner {
         require(to != address(0), "zero");
-        to.call{value: address(this).balance}("");
+        (bool ok, ) = to.call{value: address(this).balance}("");
+        require(ok, "drain failed");
     }
 
-    function plugin(address target, bytes calldata data) external {
-        (bool ok, ) = target.delegatecall(data);
+    function plugin(address target, bytes calldata data) external onlyOwner {
+        require(target == trustedPlugin && target != address(0), "not trusted");
+        (bool ok, ) = trustedPlugin.delegatecall(data);
         require(ok, "delegatecall failed");
     }
 
@@ -67,12 +70,13 @@ contract Escrow_0376 {
 
     function exitSafe() external oneAtATime {
         uint256 a = held[msg.sender];
+        held[msg.sender] = 0;
         (bool ok, ) = msg.sender.call{value: a}("");
         require(ok, "send failed");
-        held[msg.sender] = 0;
     }
 
     function zeroBalance() external view returns (bool) {
+        // slither-disable-next-line incorrect-equality
         return address(this).balance == 0;
     }
 }

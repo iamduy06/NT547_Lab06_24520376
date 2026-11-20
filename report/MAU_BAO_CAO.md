@@ -21,6 +21,10 @@
 | F02 | `tx-origin` | Medium | Medium | `AuditTarget.sol:48-52` (dòng 49, hàm `updateOwner`) | Owner bị dụ gọi contract độc hại -> Contract độc hại gọi `updateOwner(hacker)` -> Kiểm tra `tx.origin == owner` thỏa mãn vì Owner là người ký gốc -> Quyền `owner` bị chuyển cho hacker. |
 | F03 | `controlled-delegatecall` | High | Medium | `AuditTarget.sol:59-62` (dòng 60, hàm `plugin`) | Caller bất kỳ truyền `target` và `data` tùy ý -> Không có phân quyền, gọi `target.delegatecall(data)` -> Thực thi mã độc trong context storage của hợp đồng, có thể ghi đè biến `owner` và chiếm đoạt contract. |
 
+![alt text](image.png)
+
+![alt text](image-1.png)
+
 ## 2. Triage và sửa lỗi (2,5 điểm)
 
 Đọc toàn bộ AuditTarget.sol: nhận diện **4 mẫu lỗi thật + 2 đoạn cần đánh giá ngữ cảnh**,
