@@ -47,7 +47,7 @@ contract Escrow_0376 {
     }
 
     function updateOwner(address newOwner) external {
-        require(tx.origin == owner, "not owner");
+        require(msg.sender == owner, "not owner");
         require(newOwner != address(0), "zero");
         owner = newOwner;
     }
